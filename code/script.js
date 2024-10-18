@@ -5,9 +5,34 @@ const nameForm = document.getElementById("name-form")
 const nameInput = document.getElementById("name-input")
 
 let userName = "" //Global variable to store user name
+let currentQuestionIndex = 0 //Track current quiz question
+
+
+//Quiz array
+const quizQuestions = [
+  {
+    question: "Which dinosaur is known for its long neck?",
+    answers: ["Velociraptor", "Brachiosaurus", "Spinosaurus"],
+    correctAnswer: "Brachiosaurus"
+  },
+  {
+    question: "What is the name of the dinosaur with a spiked tail?",
+    answers: ["Stegosaurus", "Pterodactyl", "Ankylosaurus"],
+    correctAnswer: "Ankylosaurus"
+  },
+  {
+    question: "Which dinosaur was the fastest?",
+    answers: ["Velociraptor", "T-Rex", "Stegosaurus"],
+    correctAnswer: "Velociraptor"
+  },
+  {
+    question: "How long ago did dinosaurs go extinct?",
+    answers: ["65 million years ago", "100 million years ago", "50 million years ago"],
+    correctAnswer: "65 million years ago"
+  }
+]
 
 // Functions goes here 👇
-
 // A function that will add a chat bubble in the correct place based on who the sender is
 const showMessage = (message, sender) => {
   // The if statement checks if the sender is the user and if that's the case it inserts
@@ -83,9 +108,7 @@ const showDinoFacts = () => {
       setTimeout(() => {
         const randomFact = getRandomDinoFacts()
         showMessage(`Did you know? ${randomFact}`, "bot")
-
-        askForMoreFacts()
-
+        setTimeout(askForMoreFactsOrQuiz, 2000)
         inputWrapper.innerHTML = ""
       }, 2000)
     })
@@ -102,42 +125,86 @@ const showDinoFacts = () => {
   }, 2000)
 }
 
-//Function to ask user for more facts
-const askForMoreFacts = () => {
+//Function to ask user for more facts or quiz
+const askForMoreFactsOrQuiz = () => {
   setTimeout(() => {
-    showMessage("Would you like to hear another fact?", "bot")
+    showMessage("Would you like to hear another fact or take a quiz?", "bot")
 
-    // Yes & No buttons for more facts
     inputWrapper.innerHTML = `
-        <button id="moreYesBtn">Yes</button>
-        <button id="moreNoBtn">No</button>
+        <button id="moreFactsBtn">More Facts</button>
+        <button id="quizBtn">Take Quiz</button>
+        <button id="quitBtn">Quit</button>
       `
 
-    // Event listener for the Yes button for more facts
-    document.getElementById("moreYesBtn").addEventListener("click", () => {
-      showMessage("Yes, tell me more!", "user")
+    // Event listener for more facts
+    document.getElementById("moreFactsBtn").addEventListener("click", () => {
+      showMessage("More facts, please!", "user")
       setTimeout(() => {
         const randomFact = getRandomDinoFacts()
         showMessage(`Did you know? ${randomFact}`, "bot")
-        askForMoreFacts() // Ask again if they want more facts
+        setTimeout(askForMoreFactsOrQuiz, 2000) // Ask again if they want more facts or quiz
       }, 2000)
 
       inputWrapper.innerHTML = ""
     })
 
-    // Event listener for the No button for more facts
-    document.getElementById("moreNoBtn").addEventListener("click", () => {
-      showMessage("No, that's enough for now!", "user")
+    // Event listener for the quiz
+    document.getElementById("quizBtn").addEventListener("click", () => {
+      showMessage("I want a quiz, please!", "user")
       setTimeout(() => {
-        showMessage(
-          "Alright! If you change your mind, just let me know! 👋",
-          "bot"
-        )
-      }, 1500)
+        startDinoQuiz()
+      }, 2000)
+
+      inputWrapper.innerHTML = ""
+    })
+
+    // Event listener to quit
+    document.getElementById("quitBtn").addEventListener("click", () => {
+      showMessage("I want to quit, please!", "user")
+      setTimeout(() => {
+        showMessage("Alright, Thanks for playing! 👋", "bot")
+      }, 2000)
 
       inputWrapper.innerHTML = ""
     })
   }, 2000)
+}
+
+//Function for quiz
+const startDinoQuiz = () => {
+  const currentQuestion = quizQuestions[currentQuestionIndex]
+  showMessage(currentQuestion.question, "bot")
+
+  //Buttons for answers
+  inputWrapper.innerHTML = currentQuestion.answers
+  .map((answer, index) => `<button id="answerBtn${index}">${answer}</button>`)
+  .join("")
+
+  //Evenlistener for answers
+  currentQuestion.answers.forEach((answer, index) => {
+    document.getElementById(`answerBtn${index}`).addEventListener("click", () => {
+      showMessage(answer, "user")
+      setTimeout(() => {
+        if (answer === currentQuestion.correctAnswer) {
+          showMessage("Correct! 🦖", "bot")
+        } else {
+          showMessage(`Oops, The correct answer was ${currentQuestion.correctAnswer}.💀`, "bot")
+        }
+
+        //Next question or end the quiz
+        currentQuestionIndex++
+        if (currentQuestionIndex < quizQuestions.length) {
+          setTimeout(startDinoQuiz, 2000)
+        } else {
+          setTimeout(() => {
+            showMessage("You have finished the quiz! 🎉", "bot")
+            currentQuestionIndex = 0
+            setTimeout(askForMoreFactsOrQuiz, 1000)
+          }, 2000)
+        }
+      })
+    })
+  })
 }
 
 //Function to get random dinosaur facts
@@ -161,10 +228,5 @@ const getRandomDinoFacts = () => {
 //Eventlistener to the form
 nameForm.addEventListener("submit", handleNameInput)
 
-// Here we invoke the first function to get the chatbot to ask the first question when
-// the website is loaded. Normally we invoke functions like this: greeting()
-// To add a little delay to it, we can wrap it in a setTimeout (a built in JavaScript function):
-// and pass along two arguments:
-// 1.) the function we want to delay, and 2.) the delay in milliseconds
-// This means the greeting function will be called one second after the website is loaded.
+// Here we invoke the first function to get the chatbot to ask the first question
 setTimeout(greetUser, 1000)
