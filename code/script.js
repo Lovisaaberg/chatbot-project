@@ -32,7 +32,7 @@ const quizQuestions = [
   }
 ]
 
-// Functions goes here 👇
+// Functions here 👇
 // A function that will add a chat bubble in the correct place based on who the sender is
 const showMessage = (message, sender) => {
   // The if statement checks if the sender is the user and if that's the case it inserts
@@ -219,7 +219,7 @@ const getRandomDinoFacts = () => {
     "Some of the biggest dinosaurs were herbivores.",
     "Tyrannosaurus Rex was the most ferocious dinosaur.",
     "An asteroid hit and the dinosaurs became extinct.",
-    "Many dinosaurs had feathers.",
+    "Stegosaurus had a brain the size of a walnut.",
   ]
 
   return facts[Math.floor(Math.random() * facts.length)]
