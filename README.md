@@ -1,12 +1,11 @@
 # chatbot-project
 
-##Project Name
-Replace this readme with your own information about your project.
-
-Start by briefly describing the assignment in a sentence or two. Keep it short and to the point.
+This interactive bot is built with JavaScript, HTML and CSS, focusing on DOM manipulation, functions and scope.
 
 ### The Problem
 
-Describe how you approached to problem, and what tools and techniques you used to solve it. How did you plan? What technologies did you use? If you had more time, what would be next?
+Creating a good flow for the bot's questions was a bit challenging. To address this, I approached the task step by step and added detailed comments to explain the purpose and functionality of each function. I also thought it was important for the user to be able to exit at any time.
 
 ### View it live
+
+https://dinosaurfactbot.netlify.app
