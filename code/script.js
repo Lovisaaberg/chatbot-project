@@ -7,36 +7,53 @@ const nameInput = document.getElementById("name-input")
 let userName = "" //Global variable to store user name
 let currentQuestionIndex = 0 //Track current quiz question
 
-
 //Quiz array
 const quizQuestions = [
   {
     question: "Which dinosaur is known for its long neck?",
     answers: ["Velociraptor", "Brachiosaurus", "Spinosaurus"],
-    correctAnswer: "Brachiosaurus"
+    correctAnswer: "Brachiosaurus",
   },
   {
     question: "What is the name of the dinosaur with a spiked tail?",
     answers: ["Stegosaurus", "Pterodactyl", "Ankylosaurus"],
-    correctAnswer: "Ankylosaurus"
+    correctAnswer: "Ankylosaurus",
   },
   {
     question: "Which dinosaur was the fastest?",
     answers: ["Velociraptor", "T-Rex", "Stegosaurus"],
-    correctAnswer: "Velociraptor"
+    correctAnswer: "Velociraptor",
   },
   {
     question: "How long ago did dinosaurs go extinct?",
-    answers: ["65 million years ago", "100 million years ago", "50 million years ago"],
-    correctAnswer: "65 million years ago"
-  }
+    answers: [
+      "65 million years ago",
+      "100 million years ago",
+      "50 million years ago",
+    ],
+    correctAnswer: "65 million years ago",
+  },
 ]
 
 // Functions here 👇
+
+//Fuction to show loading before message
+const showLoading = () => {
+  chat.innerHTML += `
+  <section class="bot-msg" id="loading">
+  <img src="assets/bot.png" alt="Bot" />
+  <div class="bubble bot-bubble">
+    <p>...</p>
+  </div>
+</section>
+`
+  chat.scrollTop = chat.scrollHeight
+}
+
 // A function that will add a chat bubble in the correct place based on who the sender is
 const showMessage = (message, sender) => {
-  // The if statement checks if the sender is the user and if that's the case it inserts
-  // an HTML section inside the chat with the posted message from the user
+
+  // Show message from either bot or user
   if (sender === "user") {
     chat.innerHTML += `
       <section class="user-msg">
@@ -45,11 +62,15 @@ const showMessage = (message, sender) => {
         </div>
         <img src="assets/user.png" alt="User" />  
       </section>
-    `
-    // The else if statement checks if the sender is the bot and if that's the case it inserts
-    // an HTML section inside the chat with the posted message from the bot
+`
+    chat.scrollTop = chat.scrollHeight
   } else if (sender === "bot") {
-    chat.innerHTML += `
+    showLoading()
+    setTimeout(() => {
+      const loadingBubble = document.getElementById("loading")
+      if (loadingBubble) loadingBubble.remove()
+
+      chat.innerHTML += `
       <section class="bot-msg">
         <img src="assets/bot.png" alt="Bot" />
         <div class="bubble bot-bubble">
@@ -57,12 +78,9 @@ const showMessage = (message, sender) => {
         </div>
       </section>
     `
+      chat.scrollTop = chat.scrollHeight
+    }, 1000)
   }
-
-  //Function to scroll to the bottom in chat
-  setTimeout(() => {
-    chat.scrollTop = chat.scrollHeight
-  }, 100)
 }
 
 //Function to handle name input
@@ -122,7 +140,7 @@ const showDinoFacts = () => {
 
       inputWrapper.innerHTML = ""
     })
-  }, 2000)
+  }, 1000)
 }
 
 //Function to ask user for more facts or quiz
@@ -177,33 +195,38 @@ const startDinoQuiz = () => {
 
   //Buttons for answers
   inputWrapper.innerHTML = currentQuestion.answers
-  .map((answer, index) => `<button id="answerBtn${index}">${answer}</button>`)
-  .join("")
+    .map((answer, index) => `<button id="answerBtn${index}">${answer}</button>`)
+    .join("")
 
   //Evenlistener for answers
   currentQuestion.answers.forEach((answer, index) => {
-    document.getElementById(`answerBtn${index}`).addEventListener("click", () => {
-      showMessage(answer, "user")
-      setTimeout(() => {
-        if (answer === currentQuestion.correctAnswer) {
-          showMessage("Correct! 🦖", "bot")
-        } else {
-          showMessage(`Oops, The correct answer was ${currentQuestion.correctAnswer}.💀`, "bot")
-        }
+    document
+      .getElementById(`answerBtn${index}`)
+      .addEventListener("click", () => {
+        showMessage(answer, "user")
+        setTimeout(() => {
+          if (answer === currentQuestion.correctAnswer) {
+            showMessage("Correct! 🦖", "bot")
+          } else {
+            showMessage(
+              `Oops, The correct answer was ${currentQuestion.correctAnswer}.💀`,
+              "bot"
+            )
+          }
 
-        //Next question or end the quiz
-        currentQuestionIndex++
-        if (currentQuestionIndex < quizQuestions.length) {
-          setTimeout(startDinoQuiz, 2000)
-        } else {
-          setTimeout(() => {
-            showMessage("You have finished the quiz! 🎉", "bot")
-            currentQuestionIndex = 0
-            setTimeout(askForMoreFactsOrQuiz, 1000)
-          }, 2000)
-        }
+          //Next question or end the quiz
+          currentQuestionIndex++
+          if (currentQuestionIndex < quizQuestions.length) {
+            setTimeout(startDinoQuiz, 2000)
+          } else {
+            setTimeout(() => {
+              showMessage("You have finished the quiz! 🎉", "bot")
+              currentQuestionIndex = 0
+              setTimeout(askForMoreFactsOrQuiz, 1000)
+            }, 2000)
+          }
+        })
       })
-    })
   })
 }
 
